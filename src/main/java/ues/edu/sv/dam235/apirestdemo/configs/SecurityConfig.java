@@ -1,0 +1,54 @@
+package ues.edu.sv.dam235.apirestdemo.configs;
+
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import ues.edu.sv.dam235.apirestdemo.utilities.JwtUtil;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+    @Autowired
+    private JwtFilter jwtFilter;
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    @Bean
+    protected SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)
+        throws Exception {
+        httpSecurity
+                .csrf(csrf -> csrf.disable())
+                .cors((cors -> cors.disable()))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/login",
+                                "/auth/register",
+                                "/swagger-ui/*", "/v3/*",
+                                "/v3/api-docs/swagger-config")
+                        .permitAll()
+                        .anyRequest().authenticated()// requiere autentificacion para las demas rutas
+                );
+        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        return httpSecurity.build();
+
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authenticationConfiguration
+    ) throws Exception{
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+}

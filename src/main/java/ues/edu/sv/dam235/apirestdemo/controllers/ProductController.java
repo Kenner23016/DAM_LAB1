@@ -102,20 +102,22 @@ public class ProductController {
 
     //Borrar producto
     @DeleteMapping("/{code}")
-    public ResponseEntity<ProductsDTO> deleteProduct(
-            @PathVariable Integer code,
-            @RequestBody ProductsDTO productsDTO
-    ){
+    public ResponseEntity<Void> deleteProduct(
+            @PathVariable Integer code
+    ) {
         try {
+
             boolean deleted =
                     productServices.deleteProduct(code);
 
-            if (!deleted){
+            if (!deleted) {
                 return ResponseEntity.notFound().build();
             }
 
             return ResponseEntity.noContent().build();
+
         } catch (Exception e) {
+
             log.error("Error al eliminar producto", e);
 
             return ResponseEntity.internalServerError().build();

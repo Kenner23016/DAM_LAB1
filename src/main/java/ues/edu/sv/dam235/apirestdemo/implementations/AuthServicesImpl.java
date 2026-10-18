@@ -79,7 +79,7 @@ public class AuthServicesImpl implements AuthServices {
             User newUser = new User();
 
             newUser.setName(registerDTO.getName());
-            newUser.setLastName(registerDTO.getLastname());
+            newUser.setLastName(registerDTO.getLastName());
             newUser.setEmail(registerDTO.getEmail());
             //Ciframos contraseña
             newUser.setPassword(
